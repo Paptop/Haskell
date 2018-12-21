@@ -66,7 +66,7 @@ largerRoot a b c = findNeededRoot max a b c
 --- Ex 6 ---
 power2::Integer->Integer
 power2 n
-       | n < 0 = 0
+       | n <= 0 = 0
        | n == 1 = 2 
        | n > 0 = 2 * power2(n-1)
 
@@ -90,6 +90,7 @@ prod m n
        | otherwise = m * (prod (m+1) n)
 
 fac::Integer->Integer
-fac n = prod 1 n
+fac n | n == 0 = 1 
+      | otherwise = prod 1 
 
 

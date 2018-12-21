@@ -1,0 +1,120 @@
+module IJModule where
+
+import Data.Char
+
+-- Ex 1 --
+prefix :: String -> String -> Bool
+prefix [] _ = True
+prefix _ [] = False 
+prefix (x:xs) (y:ys) = (x == y) && prefix xs ys
+
+
+substr :: String -> String -> String -> String 
+substr _ [] _ = [] 
+substr x y z
+           | x == z = y
+           | prefix x y = substr x (z ++ (drop (length x) y ) ) z 
+           | otherwise =  (head y) : substr x (tail y) z
+
+-- Ex 2 --
+isPalin :: String -> Bool
+isPalin str = fStr == reverse fStr 
+        where fStr = [ toLower c | c <- str, isAlpha c]; 
+
+
+-- Ex 3 --
+foo :: String -> [String]
+foo s =  case dropWhile isSpace s of
+                      "" -> []
+                      s' -> w : words s''
+                            where (w, s'') = break isSpace s'
+
+justifyRec:: [String] -> Int -> String -> String -> String
+justifyRec (word:words) size currline res 
+                      |  length word > size = error("Word size exceeds limit")
+                      |  length words == 0 = newRes ++ " " ++ word 
+                      |  otherwise = justifyRec words size newLine newRes 
+                where
+                    line = currline ++ " " ++ word
+                    isLong = (length line) >= size 
+                    addLine = if isLong then currline ++ "\n" else "" 
+                    newLine = if isLong then word else line 
+                    newRes = res ++ addLine 
+
+
+justify :: String -> Int -> String
+justify str size = tail (justifyRec (foo str) size "" "") 
+
+tString = "\nThe quick brown fox jumps over the lazy dog"
+
+
+-- Ex 4 --
+data Shape = Circle Float Float Float | Rectangle Float Float Float Float
+  deriving (Show, Ord, Eq)
+
+surface :: Shape -> Float
+surface (Circle _ _ r) = pi * r ^ 2
+surface (Rectangle x y h w) = h * w
+
+distance x y x1 y1 = sqrt( (x - x1)^2 + (y - y1)^2)
+
+overlaps :: Shape -> Shape -> Bool
+overlaps (Rectangle x1 y1 h1 w1) (Rectangle x2 y2 h2 w2) = not (condL || condR)
+    where
+        -- if left side --
+        condL = l1x > r2x || l2x > r1x
+        -- if right side -- 
+        condR = l1y < r2y || l2y < r1y
+        l1x = x1 - w1 / 2
+        l1y = y1 + h1 / 2
+        r1x = x1 + w1 / 2
+        r1y = y1 - h2 / 2
+
+        
+overlaps (Rectangle x y h w) (Circle x1 y1 r) = condition
+    where
+        l1x = x - w / 2
+        l1y = y + h / 2
+        r1x = x + w / 2
+        r1y = y - h / 2
+        
+        min1 = min x1 r1x
+        min2 = min y1 l1y
+        pointX = max l1x min1
+        pointY = max r1y min2 
+        deltaX = x1 - pointX
+        deltaY = y1 - pointY
+        condition = (deltaX**2 + deltaY**2) < (r**2)
+ 
+overlaps (Circle x0 y0 r0) (Rectangle x1 y1 h w) = overlaps (Rectangle x1 y1 h w) (Circle x0 y0 r)
+
+overlaps (Circle x0 y0 r0) (Circle x1 y1 r1) = distance x0 y0 x1 y1 < r0 + r1
+
+-- Ex 5 --
+myAnyEazy :: (a->Bool) -> [a] -> Bool
+myAnyEazy f xs = length (filter f xs ) > 0
+
+myAllEazy :: (a->Bool) -> [a] -> Bool
+myAllEazy f xs = length (filter f xs) == length xs
+
+boolean :: Bool -> Int
+boolean b
+        | b == True = 1
+        | b == False = 0  
+
+condCount cond xs = total
+    where 
+        allResults = map (cond) xs
+        total = foldr(\x n -> n + (boolean x)) 0 allResults
+          
+myAll :: (a->Bool) -> [a] -> Bool
+myAll f xs = condCount f xs == length xs
+
+myAny :: (a->Bool) -> [a] -> Bool
+myAny f xs = condCount f xs > 0
+
+
+
+-- Ex 6 --
+myUnzip xs = foldr f ([],[]) xs
+  where f = \(a,b) (as,bs) -> (a:as, b:bs)

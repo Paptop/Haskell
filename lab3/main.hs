@@ -10,7 +10,7 @@ average list = (sum list) / fromIntegral(length list)
 
 -- Ex 2 --
 divides:: Integer -> [Integer]
-divides x = [n | n <- [1..x], (x `mod` n) == 0]
+divides x =  [n | n <- [1..( (abs x) `div` 2)], ( (abs x) `mod` n) == 0] ++ [ (abs x) ]
 
 dividesRec:: [Integer] -> Integer -> [Integer]
 dividesRec [] _ = [] 
@@ -22,29 +22,21 @@ dividesRecursive::Integer -> [Integer]
 dividesRecursive n = dividesRec [1..n] n
 
 isPrime:: Integer -> Bool
-isPrime p 
-          | p > 0 = length (divides p) == 2
-          | otherwise = False
+isPrime p = [1,p] == (divides p)
 
 -- Ex 3 --
 prefix:: String -> String -> Bool
-prefix [] ys = True
-prefix (x:xs) [] = False
-prefix (x:xs) (y:ys) = ( x == y) && prefix xs ys
+prefix [] _ = True
+prefix _ [] = False
+prefix (x:xs) (y:ys) = (x == y) && prefix xs ys
 
 substring:: String->String-> Bool
-substring (x:xs) [] = False
-substring xs ys
-   | prefix xs ys = True
-   | substring xs (tail ys) = True
-   | otherwise = False
+substring _ [] = False
+substring xs ys = prefix xs ys || substring xs (tail ys)
 
 -- Ex 4 --
 permut:: [Integer] -> [Integer] -> Bool
-permut x y
-        | (length x) /= (length y) = False
-        | (length x) + (length y) == 0 = True
-        | otherwise = sX == sY
+permut x y = (sort x) == (sort y)
         where sX = sort x
               sY = sort y 
 
